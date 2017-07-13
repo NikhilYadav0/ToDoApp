@@ -1,0 +1,196 @@
+package com.example.priyanka.todolistapp;
+
+import android.app.AlarmManager;
+import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+
+public class MainActivity extends AppCompatActivity {
+    ListView listView;
+     ArrayList<Expense> ExpenseList;
+    ExpenseListAdapter expenseAdapter;
+    HashMap<Integer,Long> epocList;
+    static ArrayList<Integer> list;  // CHECKBOX
+    FloatingActionButton Fab;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        list=new ArrayList<>();
+        epocList=new HashMap<>();
+//        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(myToolbar);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setTitle("Custom Title");
+
+        listView=(ListView) findViewById(R.id.listview);
+        ExpenseList=new ArrayList<>();
+        expenseAdapter=new ExpenseListAdapter(this,ExpenseList);
+        listView.setItemsCanFocus(false);
+        listView.setAdapter(expenseAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
+                Expense exp=ExpenseList.get(position);
+                i.putExtra("key",exp);
+                startActivityForResult(i,1);
+            }
+        });
+        updateExpenseList();
+        Fab=(FloatingActionButton) findViewById(R.id.FAB);
+        Fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
+                i.putExtra("index",ExpenseList.size());
+                startActivityForResult(i,0);
+            }
+        });
+
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.add){
+            final AlertDialog.Builder builder=new AlertDialog.Builder(this);
+            builder.setTitle("Add");
+            builder.setMessage("Do you wanna add ??");
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // ADD ITEM IN DATABASE AND SHOW IT ON ACTIVITY
+                    Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
+                    i.putExtra("index",ExpenseList.size());
+                    startActivityForResult(i,0);                      // REQUEST CODE = 0
+                    overridePendingTransition(R.anim.slide_in_left,R.anim.slide_in_left);
+                }
+            });
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            Dialog dialog=builder.create();
+            dialog.show();
+        }
+
+        if(item.getItemId()==R.id.remove){
+            removeChecked();
+        }
+        if(item.getItemId()==R.id.all){
+            Log.i("selectall",list.size()+"");
+            for(int i=0;i<ExpenseList.size();i++){
+                    list.set(i,1);
+            }
+            expenseAdapter.notifyDataSetChanged();
+        }
+        if(item.getItemId()==R.id.deall){
+            for(int i=0;i<ExpenseList.size();i++){
+                    list.set(i,0);
+            }
+            expenseAdapter.notifyDataSetChanged();
+        }
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if((requestCode==0||requestCode==1) && resultCode==2){
+            list.add(0);
+            Log.i("LISTLEN",list.size()+"");
+            updateExpenseList();
+        }
+    }
+    public void removeChecked(){
+        ExpenseOpenHelper expenseOpenHelper=ExpenseOpenHelper.getExpenseOpenHelper(this);
+        boolean isChanged=false;
+        for(int i=0;i<ExpenseList.size();i++){
+            if(list.get(i)==1){
+                isChanged=true;
+                Log.i("length",i+"");
+                Log.i("what","in here");
+                SQLiteDatabase db=expenseOpenHelper.getWritableDatabase();
+                int id=ExpenseList.get(i).id;
+                db.delete(ExpenseOpenHelper.TABLE_NAME," id = "+id,null);
+                list.remove(i);
+                ExpenseList.remove(i);
+                i--;
+            }
+        }
+        if(isChanged)
+        {
+            Log.i("lengths",list.size()+"");
+            expenseAdapter.notifyDataSetChanged();
+        }
+    }
+    public void updateExpenseList(){
+        epocList.clear();
+        ExpenseOpenHelper expenseOpenHelper=ExpenseOpenHelper.getExpenseOpenHelper(this);
+        SQLiteDatabase db=expenseOpenHelper.getReadableDatabase();
+        Cursor cursor=db.query(ExpenseOpenHelper.TABLE_NAME,null,null,null,null,null,null);
+        ExpenseList.clear();
+        int j=0;
+        while(cursor.moveToNext())
+        {
+            if(j>=list.size()){
+                list.add(0);
+            }else {
+                list.set(j,0);
+            }
+            String title = cursor.getString(cursor.getColumnIndex("title"));
+            double price = cursor.getDouble(cursor.getColumnIndex("price"));
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+            String category = cursor.getString(cursor.getColumnIndex("category"));
+            long epoch=cursor.getLong(cursor.getColumnIndex("epoch"));
+            Expense e = new Expense(id, title,price,category,epoch);
+            epocList.put(j,epoch);
+            ExpenseList.add(e);
+            j++;
+        }
+        Log.i("here",ExpenseList.size()+"");
+        expenseAdapter.notifyDataSetChanged();
+        //upateAlarm();
+    }
+
+    private void upateAlarm() {
+                for(int o=0;o<epocList.size();o++){
+            if(epocList.containsKey(o)){
+                AlarmManager alarmManager=(AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                Intent i=new Intent(this,AlarmReciever.class);
+                i.putExtra("TITLE",ExpenseList.get(o).title);
+                PendingIntent pendingIntent=PendingIntent.getBroadcast(this,o,i,0);
+                alarmManager.set(AlarmManager.RTC,epocList.get(i).longValue(),pendingIntent);
+            }
+        }
+    }
+}
