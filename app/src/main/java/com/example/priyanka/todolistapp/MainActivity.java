@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar=(Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         list=new ArrayList<>();
         epocList=new HashMap<>();
         Intent data=getIntent();
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         updateExpenseList();
-        Fab=(FloatingActionButton) findViewById(R.id.FAB);
+        Fab=(FloatingActionButton) findViewById(R.id.fab);
         Fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
