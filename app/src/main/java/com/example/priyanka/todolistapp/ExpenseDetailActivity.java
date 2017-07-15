@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,6 +64,11 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         b.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                if(price.getText().toString().trim().equals("")){
+                    price.setHint("THIS FIELD CAN'T BE LEFT EMPTY");
+                    price.setHintTextColor(Color.RED);
+                    return;
+                }
                 ExpenseOpenHelper expenseopenhelper = ExpenseOpenHelper.getExpenseOpenHelper(ExpenseDetailActivity.this);
                 SQLiteDatabase db = expenseopenhelper.getWritableDatabase();
                 ContentValues cv = new ContentValues();
