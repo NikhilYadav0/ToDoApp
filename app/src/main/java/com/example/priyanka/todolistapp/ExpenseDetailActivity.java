@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.sql.Time;
@@ -25,9 +26,11 @@ public class ExpenseDetailActivity extends AppCompatActivity {
     EditText title;
     EditText price;
     EditText category;
+    String whatData;
     EditText dateEditText;
     EditText timeEditText;
     Calendar calendar;
+    TextView textView5;
     long epoch;
     Button b;
     @Override
@@ -38,10 +41,13 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         title = (EditText) findViewById(R.id.title);
         price = (EditText) findViewById(R.id.price);
         category = (EditText) findViewById(R.id.editText3);
+        textView5=(TextView) findViewById(R.id.textView5);
         dateEditText = (EditText) findViewById(R.id.date);
         timeEditText=(EditText) findViewById(R.id.time);
         b = (Button) findViewById(R.id.submit);
         Intent i = getIntent();
+        whatData=i.getStringExtra("Category");
+        category.setText(whatData);
         final Expense initial = (Expense) i.getSerializableExtra("key");
         if (initial != null) {
             Log.i("duck", "in_here");
@@ -78,6 +84,10 @@ public class ExpenseDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 updateDate();
+                if(!dateEditText.getText().equals("")){
+                    timeEditText.setVisibility(View.VISIBLE);
+                    textView5.setVisibility(View.VISIBLE);
+                }
             }
         });
         timeEditText.setOnClickListener(new View.OnClickListener() {

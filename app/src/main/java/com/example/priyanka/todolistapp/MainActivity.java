@@ -30,17 +30,21 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
     ListView listView;
+    String whatData;
      ArrayList<Expense> ExpenseList;
     ExpenseListAdapter expenseAdapter;
     HashMap<Integer,Long> epocList;
     static ArrayList<Integer> list;  // CHECKBOX
     FloatingActionButton Fab;
+    FloatingActionButton SeeNew;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list=new ArrayList<>();
         epocList=new HashMap<>();
+        Intent data=getIntent();
+        whatData=data.getStringExtra("start");             // whatData="allDatabasse"
 //        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(myToolbar);
 //        ActionBar actionBar = getSupportActionBar();
@@ -66,12 +70,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
+                i.putExtra("Category",whatData);
                 i.putExtra("index",ExpenseList.size());
                 startActivityForResult(i,0);
+                overridePendingTransition(R.anim.slide_in_left,R.anim.slide_in_left);
             }
         });
-
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     // ADD ITEM IN DATABASE AND SHOW IT ON ACTIVITY
                     Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
+                    i.putExtra("Category",whatData);
                     i.putExtra("index",ExpenseList.size());
                     startActivityForResult(i,0);                      // REQUEST CODE = 0
                     overridePendingTransition(R.anim.slide_in_left,R.anim.slide_in_left);
@@ -174,8 +179,16 @@ public class MainActivity extends AppCompatActivity {
             long epoch=cursor.getLong(cursor.getColumnIndex("epoch"));
             Expense e = new Expense(id, title,price,category,epoch);
             epocList.put(j,epoch);
-            ExpenseList.add(e);
-            j++;
+            if( ! whatData.equals(AllCategories.SCHEDULE_EXTRAS) && e.category.equals(whatData))
+            {
+                ExpenseList.add(e);
+                j++;
+            }
+            else if(whatData.equals(AllCategories.SCHEDULE_EXTRAS))
+            {
+                ExpenseList.add(e);
+                j++;
+            }
         }
         Log.i("here",ExpenseList.size()+"");
         expenseAdapter.notifyDataSetChanged();
