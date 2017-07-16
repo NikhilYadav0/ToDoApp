@@ -13,6 +13,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -29,7 +31,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-    ListView listView;
+    RecyclerView recyclerView;
     String whatData;
      ArrayList<Expense> ExpenseList;
     ExpenseListAdapter expenseAdapter;
@@ -52,20 +54,29 @@ public class MainActivity extends AppCompatActivity {
 //        ActionBar actionBar = getSupportActionBar();
 //        actionBar.setTitle("Custom Title");
 
-        listView=(ListView) findViewById(R.id.listview);
+        recyclerView=(RecyclerView) findViewById(R.id.listview);
         ExpenseList=new ArrayList<>();
-        expenseAdapter=new ExpenseListAdapter(this,ExpenseList);
-        listView.setItemsCanFocus(false);
-        listView.setAdapter(expenseAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        expenseAdapter=new ExpenseListAdapter(this, ExpenseList, new ExpenseListAdapter.NotesClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(View view, int position) {
                 Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
                 Expense exp=ExpenseList.get(position);
                 i.putExtra("key",exp);
                 startActivityForResult(i,1);
             }
         });
+        recyclerView.setAdapter(expenseAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+//        recyclerView.setOnItemClickListener(new RecyclerView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
+//                Expense exp=ExpenseList.get(position);
+//                i.putExtra("key",exp);
+//                startActivityForResult(i,1);
+//            }
+//        });
         updateExpenseList();
         Fab=(FloatingActionButton) findViewById(R.id.fab);
         Fab.setOnClickListener(new View.OnClickListener() {
@@ -208,4 +219,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }
