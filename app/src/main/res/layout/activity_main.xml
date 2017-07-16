@@ -46,7 +46,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
         android:layout_marginRight="16dp"
         android:src="@drawable/download"
         app:layout_anchor="@+id/content"
-        app:layout_anchorGravity="top|right" />
+        app:layout_anchorGravity="bottom|right" />
 
     <include
         android:id="@+id/content"

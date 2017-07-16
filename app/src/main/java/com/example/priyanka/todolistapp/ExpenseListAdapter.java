@@ -29,12 +29,13 @@ public class  ExpenseListAdapter extends RecyclerView.Adapter< ExpenseListAdapte
 
     Expense e;
     ArrayList<Expense> expenseArrayList;
-    ArrayList<Integer> arrayList=MainActivity.list;  /// ESPICIALLY KEPT FOR CHECKBOX
+    ArrayList<Integer> arrayList;  /// ESPICIALLY KEPT FOR CHECKBOX
     Context context;
     NotesClickListener mListener;
 
     public interface  NotesClickListener{
         void onItemClick(View view,int position);
+        ArrayList<Integer>  forCheckboxArrayList();
     }
 
     @Override
@@ -83,6 +84,7 @@ public class  ExpenseListAdapter extends RecyclerView.Adapter< ExpenseListAdapte
         this.expenseArrayList = expenseArrayList;
         this.context = context;
         this.mListener=mListener;
+        arrayList=mListener.forCheckboxArrayList();
     }
 
     public static class ExpenseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -90,39 +92,31 @@ public class  ExpenseListAdapter extends RecyclerView.Adapter< ExpenseListAdapte
         TextView date;
         CheckBox c;
         NotesClickListener myListener;
-        public ExpenseViewHolder(View itemView,NotesClickListener mlistener) {
+        public ExpenseViewHolder(View itemView,NotesClickListener mylistener) {
             super(itemView);
+            itemView.setOnClickListener(this);
             title = (TextView) itemView.findViewById(R.id.textView);
             date=(TextView) itemView.findViewById(R.id.date);
             c=(CheckBox) itemView.findViewById(R.id.checkBox);
-            myListener=mlistener;
+            this.myListener=mylistener;
         }
-
         @Override
-        public void onClick(View view) {
-            int id = view.getId();
+        public void onClick(View v) {
+            Log.i("fine1","fine1");
+            int id = v.getId();
             int position = getAdapterPosition();
             if(position != RecyclerView.NO_POSITION){
+                Log.i("fine2","fine2");
                 if(id == R.id.layout){
-                    myListener.onItemClick(view,position);
+                    myListener.onItemClick(v,position);
+                    Log.i("fine","fine");
                 }
             }
         }
     }
 
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
 //public class ExpenseListAdapter extends ArrayAdapter {
 //    Expense e;
 //    ArrayList<Expense> expenseArrayList;
