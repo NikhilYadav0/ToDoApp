@@ -1,5 +1,7 @@
 package com.example.priyanka.todolistapp;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -27,7 +29,6 @@ import java.util.zip.DataFormatException;
 
 public class  ExpenseListAdapter extends RecyclerView.Adapter< ExpenseListAdapter.ExpenseViewHolder> {
 
-    Expense e;
     ArrayList<Expense> expenseArrayList;
     ArrayList<Integer> arrayList;  /// ESPICIALLY KEPT FOR CHECKBOX
     Context context;
@@ -73,7 +74,18 @@ public class  ExpenseListAdapter extends RecyclerView.Adapter< ExpenseListAdapte
         Log.i("epoch",e.epoch+"*"+date);
         DateFormat dateFormat=DateFormat.getDateInstance();
         expenseViewHolder.date.setText(dateFormat.format(date) + "  "+tim);
+//        setAlarm(e,position);
     }
+//    private void setAlarm(Expense e,int position) {
+//
+//            AlarmManager alarmManager=(AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//            Intent i=new Intent(context,AlarmReciever.class);
+//            i.putExtra("TITLE",e.title);
+//            Log.i("alarm1","alarm1");
+//            PendingIntent pendingIntent=PendingIntent.getBroadcast(context,position,i,PendingIntent.FLAG_UPDATE_CURRENT);
+//            alarmManager.set(AlarmManager.RTC,e.epoch,pendingIntent);
+//    }
+
 
     @Override
     public int getItemCount() {

@@ -8,12 +8,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 /**
  * Created by PRIYANKA on 11-07-2017.
  */
 
-class AlarmReciever extends BroadcastReceiver{
+public class AlarmReciever extends BroadcastReceiver{
     static int i=0;
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -22,8 +23,7 @@ class AlarmReciever extends BroadcastReceiver{
                 .setContentTitle(intent.getStringExtra("TITLE"))
                 .setAutoCancel(false)
                 .setContentText("Time Over For "+intent.getStringExtra("TITLE"));
-        Intent resultIntent=new Intent(context,MainActivity.class);
-        PendingIntent pendingIntent=PendingIntent.getActivity(context,i++,resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Log.i("alarm2","alarm2");
         NotificationManager notificationManager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(i++,noBuilder.build());
     }

@@ -1,8 +1,11 @@
 package com.example.priyanka.todolistapp;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -50,6 +53,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         whatData=i.getStringExtra("Category");
         category.setText(whatData);
         final Expense initial = (Expense) i.getSerializableExtra("key");
+        final int position=i.getIntExtra("position",-1);
         if (initial != null) {
             Log.i("duck", "in_here");
             title.setText(initial.title);
@@ -64,6 +68,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         b.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                setAlarm(title.getText().toString(),position,epoch);
                 if(price.getText().toString().trim().equals("")){
                     price.setHint("THIS FIELD CAN'T BE LEFT EMPTY");
                     price.setHintTextColor(Color.RED);
@@ -102,6 +107,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
                 updateTime();
             }
         });
+
     }
     private void updateTime() {
         new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
@@ -124,6 +130,16 @@ public class ExpenseDetailActivity extends AppCompatActivity {
                 dateEditText.setText(dateFormat.format(dt));
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void setAlarm(String title,int position,long epoch) {
+
+        AlarmManager alarmManager=(AlarmManager) ExpenseDetailActivity.this.getSystemService(Context.ALARM_SERVICE);
+        Intent i=new Intent(ExpenseDetailActivity.this,AlarmReciever.class);
+        i.putExtra("TITLE",title);
+        Log.i("alarm1","alarm1");
+        PendingIntent pendingIntent=PendingIntent.getBroadcast(ExpenseDetailActivity.this,position,i,PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC,epoch,pendingIntent);
     }
 }
 
