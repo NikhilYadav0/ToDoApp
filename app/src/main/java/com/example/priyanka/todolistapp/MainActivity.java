@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 //    HashMap<Integer,Long> epocList;
     ArrayList<Integer> list;  // CHECKBOX
     FloatingActionButton Fab;
-    FloatingActionButton SeeNew;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 int from=viewHolder.getAdapterPosition();
-                int to=viewHolder.getAdapterPosition();
+                int to=target.getAdapterPosition();
                 Collections.swap(ExpenseList,from,to);
                 Collections.swap(list,from,to);
                 expenseAdapter.notifyItemMoved(from,to);
