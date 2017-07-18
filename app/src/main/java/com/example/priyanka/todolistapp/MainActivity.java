@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
         expenseAdapter=new ExpenseListAdapter(this, ExpenseList, new ExpenseListAdapter.NotesClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Log.i("bjp","onClick");
                 Intent i=new Intent(MainActivity.this,ExpenseDetailActivity.class);
                 Expense exp=ExpenseList.get(position);
                 i.putExtra("key",exp);
