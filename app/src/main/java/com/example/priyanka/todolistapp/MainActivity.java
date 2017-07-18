@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
             list.remove(index);
             expenseAdapter.notifyItemRemoved(index);
             removeFrpmDatabase(id);
+            PendingIntent pendingIntent=new PendingIntent;
         }
     });
         itemTouchHelper.attachToRecyclerView(recyclerView);

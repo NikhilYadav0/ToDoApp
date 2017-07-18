@@ -65,7 +65,8 @@ public class  ExpenseListAdapter extends RecyclerView.Adapter< ExpenseListAdapte
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 int i = 0;
                 if(isChecked){i=1;}
-                arrayList.set(position,i);
+                if(arrayList.size()>position)
+                 arrayList.set(position,i);
                 return;
             }
         });
